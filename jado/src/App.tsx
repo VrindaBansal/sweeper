@@ -11,11 +11,25 @@ function App() {
   const [activeTab, setActiveTab] = useState<Category | 'calendar' | 'dump'>('work');
   const [showSearch, setShowSearch] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [isRetroMode, setIsRetroMode] = useState(() => {
+    const saved = localStorage.getItem('jado_retro_mode');
+    return saved === 'true';
+  });
 
   // Check on app load if it's Sunday and we need to file notes
   useEffect(() => {
     checkAndFileNotes();
   }, []);
+
+  // Save retro mode preference
+  useEffect(() => {
+    localStorage.setItem('jado_retro_mode', String(isRetroMode));
+    if (isRetroMode) {
+      document.body.classList.add('retro-mode');
+    } else {
+      document.body.classList.remove('retro-mode');
+    }
+  }, [isRetroMode]);
 
   const checkAndFileNotes = () => {
     const now = new Date();
@@ -81,6 +95,17 @@ function App() {
     <div className="app">
       <header className="app-header">
         <h1 className="app-title">Jado</h1>
+        <div className="glass-toggle-container">
+          <label className="glass-toggle">
+            <input
+              type="checkbox"
+              checked={isRetroMode}
+              onChange={(e) => setIsRetroMode(e.target.checked)}
+            />
+            <span className="toggle-slider"></span>
+            <span className="toggle-label">{isRetroMode ? 'Retro' : 'Classic'}</span>
+          </label>
+        </div>
       </header>
 
       <div className="tabs">
